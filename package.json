@@ -1,0 +1,26 @@
+{
+  "name": "store-rxjs",
+  "version": "1.0.0",
+  "description": "redux hierarchical obsrevale store on typescript",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franzzua/rxjs-store.git"
+  },
+  "keywords": [
+    "redux",
+    "rxjs",
+    "store",
+    "observable",
+    "typescript"
+  ],
+  "author": "franzzua",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/franzzua/rxjs-store/issues"
+  },
+  "homepage": "https://github.com/franzzua/rxjs-store#readme"
+}
