@@ -1,7 +1,7 @@
-import {Fn} from "../functions/Fn";
+import {Fn} from "./Fn";
 import {Action, AnyAction, Reducer} from "redux";
 import {combineReducers as combineReducersDefault} from "redux";
-import {deepAssign} from '../deepAssign';
+import {deepAssign} from './deepAssign';
 
 export const downgradeAction = action => Object.assign({}, action, {type: action.type.split('.').slice(1).join('.')});
 

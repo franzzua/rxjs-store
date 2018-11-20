@@ -1,58 +1,35 @@
 import {ObservableStore} from './ObservableStore';
-import {Store, applyMiddleware, createStore, Middleware, Action, StoreEnhancer} from 'redux';
-import {ActionsObservable, createEpicMiddleware} from 'redux-observable';
-import {NgRedux} from '@angular-redux/store';
-import {Fn} from '../functions/Fn';
-import {catchError, flatMap, publishReplay, refCount, filter, map} from 'rxjs/operators'
-import {NEVER} from 'rxjs';
-import {Observable} from 'rxjs';
+import {applyMiddleware, Middleware, Action, StoreEnhancer} from 'redux';
+import {ActionsObservable, createEpicMiddleware} from './redux-observable';
+import {map} from 'rxjs/internal/operators/map'
+import {NEVER} from 'rxjs/internal/observable/never';
 import {BaseStore} from './BaseStore';
-import {Injectable} from '@angular/core';
-import {Subject} from "rxjs";
+import {Store} from "./store";
+import {Subject} from "rxjs/internal/Subject";
+import {Observable} from 'rxjs/internal/Observable';
+import {publishReplay} from 'rxjs/internal/operators/publishReplay';
+import {refCount} from 'rxjs/internal/operators/refCount';
+import {catchError} from 'rxjs/internal/operators/catchError';
+import {filter} from 'rxjs/internal/operators/filter';
+import {mergeMap} from 'rxjs/internal/operators/mergeMap';
 
 export class DevToolEnhancer {
     public Enhance(storeEnhancer: StoreEnhancer) {
         return storeEnhancer;
     }
 }
-
-const adapter = {
-    input: (input$: Observable<any>) => {
-        return Object.assign(input$, {
-            subscribeCore: obs => input$.subscribe(obs),
-            ofType: (...keys) => input$.pipe(filter(action => {
-                const type = action.type;
-                const len = keys.length;
-
-                if (len === 1) {
-                    return type === keys[0];
-                } else {
-                    for (let i = 0; i < len; i++) {
-                        if (keys[i] === type) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }))
-        });
-    },
-    output: (output$: any) => output$
-}
-
 /**
  * Created by xamidylin on 20.06.2017.
  */
-@Injectable()
 export class RootStore extends ObservableStore<any> {
-    constructor(ngRedux: NgRedux<any>, private devToolEnhancers: DevToolEnhancer) {
+    constructor(store: Store<any>, private devToolEnhancers: DevToolEnhancer) {
         super(null, null);
-        this.ngRedux = ngRedux;
+        this.store = store;
     }
 
-    private store: Store<any>;
+    protected store: Store<any>;
 
-    public selector = Fn.I;
+    public selector = x => x;
 
     public initStore(state?: any): Store<any> {
         if (state)
@@ -64,39 +41,34 @@ export class RootStore extends ObservableStore<any> {
     }
 
     public createStore(state?: any): Store<any> {
-        if (this.store) {
-            if (state)
-                this.dispatch({
-                    type: 'newState',
-                    payload: state
-                });
-            return this.store;
-        }
+        // if (this.store) {
+        //     if (state)
+        //         this.dispatch({
+        //             type: 'newState',
+        //             payload: state
+        //         });
+        //     return this.store;
+        // }
         console.log('store');
-        const epicMiddleware = createEpicMiddleware({
-            adapter: adapter
-        });
-        const store = <Store<any>> createStore(
-            this.combinedReducer,
+        const epicMiddleware = createEpicMiddleware();
+        this.store.provide(this.combinedReducer,
             state,
             this.devToolEnhancers.Enhance(applyMiddleware(
                 epicMiddleware,
                 this.getLogMiddleware(),
                 ...this.getOtherMiddlewares()))
-            )
-        ;
+        );
         epicMiddleware.run(this.epic$);
-        this.ngRedux.provideStore(store);
         // state && state.History && state.History.forEach(this.ngRedux.dispatch);
-        return this.store = store;
+        return this.store;
     }
 
     public dispatch<A extends Action>(a: A) {
-        return this.ngRedux.dispatch(a);
+        return this.store.dispatch(a);
     }
 
     public getState() {
-        return this.ngRedux.getState();
+        return this.store.getState();
     }
 
     private _epicRegistrator;
@@ -144,7 +116,7 @@ export class RootStore extends ObservableStore<any> {
             this.epicRegistrator(this.StoresMap[key].epic.epic$, this.StoresMap[key]);
         }
         this.epicRegistrator(this.epic.epic$, this);
-        return actionSubject.asObservable().pipe(flatMap(Fn.I));
+        return actionSubject.asObservable().pipe(mergeMap(x => x));
     };
 
     public getLogMiddleware() {
@@ -158,35 +130,4 @@ export class RootStore extends ObservableStore<any> {
     public getOtherMiddlewares(): Middleware[] {
         return [];
     }
-
-    //
-    // public getEpicsMiddleware(): Middleware {
-    //     const epicMiddleware = createEpicMiddleware();
-    //     epicMiddleware.run(this.epic$, {
-    //         adapter: {
-    //             input: (input$: Observable<any>) => {
-    //                 return Object.assign(input$, {
-    //                     subscribeCore: obs => input$.subscribe(obs),
-    //                     ofType: (...keys) => input$.pipe(filter(action => {
-    //                         const type = action.type;
-    //                         const len = keys.length;
-    //
-    //                         if (len === 1) {
-    //                             return type === keys[0];
-    //                         } else {
-    //                             for (let i = 0; i < len; i++) {
-    //                                 if (keys[i] === type) {
-    //                                     return true;
-    //                                 }
-    //                             }
-    //                         }
-    //                         return false;
-    //                     }))
-    //                 });
-    //             },
-    //             output: (output$: any) => output$
-    //         }
-    //     });
-    //     return epicMiddleware;
-    // }
 }

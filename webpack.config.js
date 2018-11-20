@@ -1,23 +1,25 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = env => ({
-    entry: './entry/index.ts',
+    entry: './index.ts',
     output: {
-        path: require('path').join(__dirname, '../dist')
+        path: require('path').join(__dirname, './dist')
     },
-    mode: env.prod ? 'production' : 'development',
+    mode: env && env.prod ? 'production' : 'development',
+    watch: !(env && env.prod),
     module: {
         rules: [
             {
                 test: /\.ts/,
-                use: [
-                    {
-                        loader: 'awesome-typescript-loader',
-                        options: {
-                            configFileName: './configs/tsconfig.json',
-                        }
-                    }
-                ]
+                loader: 'awesome-typescript-loader',
+            },
+
+            {
+                test: /\.js/,
+                loader: '@angular-devkit/build-optimizer/webpack-loader',
+                options: {
+                    sourceMap: false
+                }
             }
         ]
     },
@@ -26,8 +28,6 @@ module.exports = env => ({
         mainFields: ['module','main']
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: './entry/index.html'
-        })
+        new BundleAnalyzerPlugin()
     ]
 });

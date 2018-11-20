@@ -1,8 +1,9 @@
-import {Epic} from 'redux-observable';
+import {Epic} from './redux-observable';
 import {BaseStore} from './BaseStore';
 import {Action, Reducer} from 'redux';
-import {Observable, ReplaySubject} from 'rxjs';
-import {flatMap} from 'rxjs/operators';
+import {Observable} from 'rxjs/internal/Observable';
+import {ReplaySubject} from 'rxjs/internal/ReplaySubject';
+import {mergeMap} from 'rxjs/internal/operators/mergeMap';
 
 /**
  * Created by xamidylin on 19.06.2017.
@@ -29,7 +30,7 @@ export class ObservableStore<TState> extends BaseStore<TState> {
     };
 
     public getState() {
-        return this.selector(this.ngRedux.getState());
+        return this.selector(this.store.getState());
     }
 
     public asObservable(): Observable<TState> {
@@ -38,7 +39,7 @@ export class ObservableStore<TState> extends BaseStore<TState> {
 
     private initSubject = new ReplaySubject<any>(1);
     private state$: Observable<TState> = this.initSubject.asObservable().pipe(
-        flatMap(a => this.ngRedux.select(this.selector))
+        mergeMap(a => this.store.select(this.selector))
     );
 
     protected Init(state = {}) {

@@ -1,4 +1,4 @@
-import { merge } from 'rxjs';
+import { merge } from 'rxjs/internal/operators/merge';
 
 /**
   Merges all epics into a single one.

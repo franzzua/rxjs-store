@@ -2,7 +2,11 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "../",
+    "declarationMap": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "baseUrl": "./",
     "target": "es6",
     "module": "commonjs",
     "types": [

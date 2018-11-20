@@ -1,4 +1,4 @@
-import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs/internal/operators/filter';
 
 const keyHasType = (type, key) => {
   return type === key || typeof key === 'function' && type === key.toString();

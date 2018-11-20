@@ -1,6 +1,6 @@
 import {Subject} from 'rxjs/internal/Subject';
 import {from} from 'rxjs/internal/observable/from';
-import {QueueScheduler} from 'rxjs/internal/scheduler/QueueScheduler';
+import {queue} from 'rxjs/internal/scheduler/queue';
 import {map} from 'rxjs/internal/operators/map';
 import {mergeMap} from 'rxjs/internal/operators/mergeMap';
 import {observeOn} from 'rxjs/internal/operators/observeOn';
@@ -9,24 +9,16 @@ import {ActionsObservable} from './ActionsObservable';
 import {StateObservable} from './StateObservable';
 
 export function createEpicMiddleware(options = {}) {
-    if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
-        throw new TypeError('Providing your root Epic to `createEpicMiddleware(rootEpic)` is no longer supported, instead use `epicMiddleware.run(rootEpic)`\n\nLearn more: https://redux-observable.js.org/MIGRATION.html#setting-up-the-middleware');
-    }
-
     const epic$ = new Subject();
     let store;
 
     const epicMiddleware = _store => {
-        if (process.env.NODE_ENV !== 'production' && store) {
-            // https://github.com/redux-observable/redux-observable/issues/389
-            require('./utils/console').warn('this middleware is already associated with a store. createEpicMiddleware should be called for every store.\n\nLearn more: https://goo.gl/2GQ7Da');
-        }
         store = _store;
         const actionSubject$ = new Subject().pipe(
-            observeOn(QueueScheduler)
+            observeOn(queue)
         );
         const stateSubject$ = new Subject().pipe(
-            observeOn(queueScheduler)
+            observeOn(queue)
         );
         const action$ = new ActionsObservable(actionSubject$);
         const state$ = new StateObservable(stateSubject$, store.getState());
@@ -45,8 +37,8 @@ export function createEpicMiddleware(options = {}) {
             }),
             mergeMap(output$ =>
                 from(output$).pipe(
-                    subscribeOn(queueScheduler),
-                    observeOn(queueScheduler)
+                    subscribeOn(queue),
+                    observeOn(queue)
                 )
             )
         );
@@ -71,9 +63,6 @@ export function createEpicMiddleware(options = {}) {
     };
 
     epicMiddleware.run = rootEpic => {
-        if (process.env.NODE_ENV !== 'production' && !store) {
-            require('./utils/console').warn('epicMiddleware.run(rootEpic) called before the middleware has been setup by redux. Provide the epicMiddleware instance to createStore() first.');
-        }
         epic$.next(rootEpic);
     };
 

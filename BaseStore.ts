@@ -1,23 +1,22 @@
-import {Injectable} from "@angular/core";
-import {NgRedux} from "@angular-redux/store";
-import {Reducer, MiddlewareAPI, Action, Dispatch, AnyAction} from "redux";
-import {Epic} from "redux-observable";
-import {Fn} from "../functions/Fn";
+import {Reducer, AnyAction} from "redux";
+import {Epic} from "./redux-observable";
 import {downgradeAction, objectReducer} from "./reducers";
 import {ActionsCreator} from "./ActionsCreator";
-import {NEVER, Subject} from 'rxjs';
+import {Subject} from 'rxjs/internal/Subject';
+import {Store} from "./store";
+import {NEVER} from "rxjs/internal/observable/never";
 
-export class BaseStore<TState> implements MiddlewareAPI<Dispatch<AnyAction>, TState> {
+export class BaseStore<TState> {
     public path: (string | number)[] = [];
     public Actions = new ActionsCreator<TState>();
     protected parentStore: BaseStore<any>;
-    protected ngRedux: NgRedux<TState>;
+    protected store: Store<TState>;
     protected StoresMap: {} = {};
     protected epic: { epic$: Epic<any, TState> } = {
         epic$: (action$, store) => NEVER
     };
     protected reducer: { reduce: Reducer<TState> } = {
-        reduce: objectReducer<TState>(Fn.I)
+        reduce: objectReducer<TState>(x => x)
     };
 
     constructor(parentStore: BaseStore<any>, protected key: string) {
@@ -25,7 +24,7 @@ export class BaseStore<TState> implements MiddlewareAPI<Dispatch<AnyAction>, TSt
         // костыль для rootStore
             return;
         this.parentStore = parentStore;
-        this.ngRedux = this.parentStore.ngRedux;
+        this.store = this.parentStore.store;
         parentStore.Register(this, key);
         setTimeout(() => this.Init());
     }
@@ -55,7 +54,7 @@ export class BaseStore<TState> implements MiddlewareAPI<Dispatch<AnyAction>, TSt
     }
 
     public dispatch<A extends AnyAction>(action: A) {
-        return this.ngRedux.dispatch(action);
+        return this.store.dispatch(action);
     }
 
     public Register<TChildState>(childStore: BaseStore<TChildState>,
@@ -76,7 +75,7 @@ export class BaseStore<TState> implements MiddlewareAPI<Dispatch<AnyAction>, TSt
 
     protected Init(state = {}) {
         // Object.keys(this.StoresMap).forEach(key => this.StoresMap[key].Init());
-        this.Actions.InitActionCreator(this.ngRedux, this.path, state);
+        this.Actions.InitActionCreator(this.store, this.path, state);
         this.epicRegistrator(this.epic.epic$, this);
         this.OnInit.next(state);
         this.OnInit.complete();
