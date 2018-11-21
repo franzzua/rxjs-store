@@ -2,8 +2,9 @@ import {Observable} from 'rxjs/internal/Observable';
 import {of} from 'rxjs/internal/observable/of';
 import {from} from 'rxjs/internal/observable/from';
 import {ofType} from './operators';
+import {Operator} from "rxjs/internal/Operator";
 
-export class ActionsObservable extends Observable {
+export class ActionsObservable<T> extends Observable<T> {
     static of(...actions) {
         return new this(of(...actions));
     }
@@ -17,10 +18,10 @@ export class ActionsObservable extends Observable {
         this.source = actionsSubject;
     }
 
-    lift(operator) {
-        const observable = new ActionsObservable(this);
+    lift<R>(operator: Operator<T, R>): Observable<R> {
+        const observable = new ActionsObservable<R>(this);
         observable.operator = operator;
-        return observable;
+        return observable as Observable<R>;
     }
 
     ofType(...keys) {

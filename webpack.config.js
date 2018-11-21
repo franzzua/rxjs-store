@@ -29,6 +29,8 @@ module.exports = env => ({
         mainFields: ['module','main']
     },
     plugins: [
-        new BundleAnalyzerPlugin()
+        new BundleAnalyzerPlugin({
+            analyzerPort: 9999
+        })
     ]
 });

@@ -1,5 +1,5 @@
 import {Reducer, AnyAction} from "redux";
-import {Epic} from "./redux-observable";
+import {Epic} from "./redux-observable/index";
 import {downgradeAction, objectReducer} from "./reducers";
 import {ActionsCreator} from "./ActionsCreator";
 import {Subject} from 'rxjs/internal/Subject';

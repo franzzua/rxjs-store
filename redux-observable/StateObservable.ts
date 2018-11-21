@@ -1,7 +1,11 @@
 import {Subject} from 'rxjs/internal/Subject';
 import {Observable} from 'rxjs/internal/Observable';
+import {Subscription} from "rxjs/internal/Subscription";
 
-export class StateObservable extends Observable {
+export class StateObservable<T> extends Observable<T> {
+    private __notifier: any;
+    private value: any;
+    private __subscription: Subscription;
     constructor(stateSubject, initialState) {
         super(subscriber => {
             const subscription = this.__notifier.subscribe(subscriber);
@@ -12,7 +16,7 @@ export class StateObservable extends Observable {
         });
 
         this.value = initialState;
-        this.__notifier = new Subject();
+        this.__notifier = new Subject<T>();
         this.__subscription = stateSubject.subscribe(value => {
             // We only want to update state$ if it has actually changed since
             // redux requires reducers use immutability patterns.

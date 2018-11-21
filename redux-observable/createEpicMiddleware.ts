@@ -7,19 +7,21 @@ import {observeOn} from 'rxjs/internal/operators/observeOn';
 import {subscribeOn} from 'rxjs/internal/operators/subscribeOn';
 import {ActionsObservable} from './ActionsObservable';
 import {StateObservable} from './StateObservable';
+import {Middleware, StoreEnhancer} from "redux";
+import {Epic} from "./types";
 
-export function createEpicMiddleware(options = {}) {
-    const epic$ = new Subject();
+export function createEpicMiddleware(options: any = {}) {
+    const epic$ = new Subject<any>();
     let store;
 
-    const epicMiddleware = _store => {
+    const epicMiddleware = (_store => {
         store = _store;
         const actionSubject$ = new Subject().pipe(
             observeOn(queue)
-        );
+        ) as Subject<any>;
         const stateSubject$ = new Subject().pipe(
             observeOn(queue)
-        );
+        ) as Subject<any>;
         const action$ = new ActionsObservable(actionSubject$);
         const state$ = new StateObservable(stateSubject$, store.getState());
 
@@ -60,7 +62,7 @@ export function createEpicMiddleware(options = {}) {
                 return result;
             };
         };
-    };
+    }) as Middleware<any,any,any> & { run(epic: Epic): void; };
 
     epicMiddleware.run = rootEpic => {
         epic$.next(rootEpic);
