@@ -3,7 +3,8 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 module.exports = env => ({
     entry: './index.ts',
     output: {
-        path: require('path').join(__dirname, './dist')
+        path: require('path').join(__dirname, './dist'),
+        libraryTarget: 'commonjs'
     },
     mode: env && env.prod ? 'production' : 'development',
     watch: !(env && env.prod),
