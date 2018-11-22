@@ -1,5 +1,5 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const nodeExternals = require('webpack-node-externals')
 module.exports = env => ({
     entry: './index.ts',
     output: {
@@ -28,6 +28,7 @@ module.exports = env => ({
         extensions: ['.ts', '.js'],
         mainFields: ['module','main']
     },
+    externals: nodeExternals(),
     plugins: [
         new BundleAnalyzerPlugin({
             analyzerPort: 9999

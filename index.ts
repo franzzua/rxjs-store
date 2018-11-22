@@ -4,5 +4,5 @@ export * from './ObservableStore';
 export * from './RootStore';
 export * from './reducers';
 export * from './store';
-
+export * from './redux-observable/index'
 // export * from './ArrayActionsCreator';
