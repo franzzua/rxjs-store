@@ -1,6 +1,6 @@
 {
   "name": "store-rxjs",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "description": "redux hierarchical obsrevale store on typescript",
   "scripts": {
     "build": "webpack --config webpack.config.js",
