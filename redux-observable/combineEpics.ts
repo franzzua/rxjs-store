@@ -1,4 +1,4 @@
-import { merge } from 'rxjs/internal/operators/merge';
+import { merge } from 'rxjs/internal/observable/merge';
 import {Epic} from "./types";
 import {Observable} from "rxjs";
 
