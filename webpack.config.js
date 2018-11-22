@@ -6,6 +6,7 @@ module.exports = env => ({
         path: require('path').join(__dirname, './dist'),
         libraryTarget: 'commonjs'
     },
+    devtool: false,
     mode: env && env.prod ? 'production' : 'development',
     watch: !(env && env.prod),
     module: {
