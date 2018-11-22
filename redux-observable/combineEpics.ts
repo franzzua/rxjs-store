@@ -1,9 +1,10 @@
 import { merge } from 'rxjs/internal/operators/merge';
+import {Epic} from "./types";
 
 /**
   Merges all epics into a single one.
  */
-export const combineEpics = (...epics) => {
+export const combineEpics = <TState>(...epics) => {
   const merger = (...args) => merge(
     ...epics.map(epic => {
       const output$ = epic(...args);
@@ -12,7 +13,7 @@ export const combineEpics = (...epics) => {
       }
       return output$;
     })
-  );
+  ) as Epic<any, TState>;
 
   // Technically the `name` property on Function's are supposed to be read-only.
   // While some JS runtimes allow it anyway (so this is useful in debugging)
