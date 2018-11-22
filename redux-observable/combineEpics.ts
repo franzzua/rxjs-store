@@ -1,11 +1,12 @@
 import { merge } from 'rxjs/internal/operators/merge';
 import {Epic} from "./types";
+import {Observable} from "rxjs";
 
 /**
   Merges all epics into a single one.
  */
-export const combineEpics = <TState>(...epics) => {
-  const merger = (...args) => merge(
+export const combineEpics: <TState>(...epics: Observable<any>[]) => Epic<any, TState> = <TState>(...epics) => {
+  const merger = ((...args) => merge(
     ...epics.map(epic => {
       const output$ = epic(...args);
       if (!output$) {
@@ -13,7 +14,7 @@ export const combineEpics = <TState>(...epics) => {
       }
       return output$;
     })
-  ) as Epic<any, TState>;
+  ));
 
   // Technically the `name` property on Function's are supposed to be read-only.
   // While some JS runtimes allow it anyway (so this is useful in debugging)
@@ -24,5 +25,5 @@ export const combineEpics = <TState>(...epics) => {
     });
   } catch (e) {}
 
-  return merger;
+  return merger as any as Epic<any, TState>;
 };
