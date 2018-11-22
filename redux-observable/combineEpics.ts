@@ -5,7 +5,7 @@ import {Observable} from "rxjs";
 /**
   Merges all epics into a single one.
  */
-export const combineEpics: <TState>(...epics: Observable<any>[]) => Epic<any, TState> = <TState>(...epics) => {
+export const combineEpics: <TState>(...epics: Epic<any, any>[]) => Epic<any, TState> = <TState>(...epics) => {
   const merger = ((...args) => merge(
     ...epics.map(epic => {
       const output$ = epic(...args);
