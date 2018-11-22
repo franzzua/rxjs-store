@@ -12,6 +12,7 @@ import {refCount} from 'rxjs/internal/operators/refCount';
 import {catchError} from 'rxjs/internal/operators/catchError';
 import {filter} from 'rxjs/internal/operators/filter';
 import {mergeMap} from 'rxjs/internal/operators/mergeMap';
+import {Injectable} from "@decorators/di";
 
 export class DevToolEnhancer {
     public Enhance(storeEnhancer: StoreEnhancer) {
@@ -21,6 +22,7 @@ export class DevToolEnhancer {
 /**
  * Created by xamidylin on 20.06.2017.
  */
+@Injectable()
 export class RootStore extends ObservableStore<any> {
     constructor(store: Store<any>, private devToolEnhancers: DevToolEnhancer) {
         super(null, null);

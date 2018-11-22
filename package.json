@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/franzzua/rxjs-store#readme",
   "dependencies": {
+    "@decorators/di": "^1.0.2",
     "redux": "^4.0.1",
     "rxjs": "^6.3.3"
   },
