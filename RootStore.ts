@@ -12,19 +12,18 @@ import {refCount} from 'rxjs/internal/operators/refCount';
 import {catchError} from 'rxjs/internal/operators/catchError';
 import {filter} from 'rxjs/internal/operators/filter';
 import {mergeMap} from 'rxjs/internal/operators/mergeMap';
-
-export class DevToolEnhancer {
-    public Enhance(storeEnhancer: StoreEnhancer) {
-        return storeEnhancer;
-    }
-}
+import {composeWithDevTools} from "redux-devtools-extension";
+import {Fn} from "./Fn";
 /**
  * Created by xamidylin on 20.06.2017.
  */
 export class RootStore extends ObservableStore<any> {
-    constructor(store: Store<any>, private devToolEnhancers: DevToolEnhancer) {
+    private compose: any;
+
+    constructor(store: Store<any>, useDevTools = false) {
         super(null, null);
         this.store = store;
+        this.compose = useDevTools ? composeWithDevTools : Fn.I;
     }
 
     protected store: Store<any>;
@@ -53,7 +52,7 @@ export class RootStore extends ObservableStore<any> {
         const epicMiddleware = createEpicMiddleware();
         this.store.provide(this.combinedReducer,
             state,
-            this.devToolEnhancers.Enhance(applyMiddleware(
+            this.compose(applyMiddleware(
                 epicMiddleware,
                 this.getLogMiddleware(),
                 ...this.getOtherMiddlewares()))
