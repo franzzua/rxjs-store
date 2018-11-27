@@ -27,9 +27,14 @@ module.exports = env => ({
     },
     resolve: {
         extensions: ['.ts', '.js'],
-        mainFields: ['module','main']
+        mainFields: ['module','main'],
+        alias: {
+            '@so/di': 'A:/so/di'
+        }
     },
-    externals: nodeExternals(),
+    externals: nodeExternals({
+        whitelist: [/^redux/]
+    }),
     plugins: [
         new BundleAnalyzerPlugin({
             analyzerPort: 9999

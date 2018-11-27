@@ -25,8 +25,6 @@
   },
   "homepage": "https://github.com/franzzua/rxjs-store#readme",
   "dependencies": {
-    "@decorators/di": "^1.0.2",
-    "redux": "^4.0.1",
     "rxjs": "^6.3.3"
   },
   "main": "dist/main.js",
@@ -35,6 +33,7 @@
     "dist/"
   ],
   "devDependencies": {
+    "redux": "^4.0.1",
     "@angular-devkit/build-optimizer": "^0.10.6",
     "@types/node": "^10.12.9",
     "awesome-typescript-loader": "^5.2.1",
